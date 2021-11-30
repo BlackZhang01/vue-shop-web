@@ -1,4 +1,3 @@
-
 <template>
   <div id="app">
     <router-view></router-view>
@@ -7,7 +6,7 @@
 
 <script>
 export default {
-  name: "App",
+  name: "app",
 };
 </script>
 
