@@ -11,7 +11,35 @@
     <!-- 主体区域 -->
     <el-container>
       <!-- 左侧导航栏 -->
-      <el-aside width="200px">Aside</el-aside>
+      <el-aside width="200px">
+        <!-- 导航菜单 -->
+        <el-menu
+          background-color="#333744"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <el-submenu
+            :index="item.id + ''"
+            v-for="item in menuList"
+            :key="item.id"
+          >
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>{{ item.authName }}</span>
+            </template>
+            <el-menu-item
+              index="1-4-1"
+              v-for="subItem in item.children"
+              :key="subItem.id"
+            >
+              <template slot="title">
+                <i class="el-icon-location"></i>
+                <span>{{ subItem.authName }}</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
       <!-- 右侧主体内容 -->
       <el-main>Main</el-main>
     </el-container>
@@ -21,11 +49,25 @@
 <script>
 export default {
   name: 'Home',
+  data() {
+    return {
+      menuList: {},
+    }
+  },
   methods: {
     logout() {
       window.sessionStorage.clear('token')
       this.$router.push('/login')
     },
+    async getMenuList() {
+      const { data: result } = await this.$http.get('menus')
+      if (result.meta.status === 200) {
+        this.menuList = result.data
+      }
+    },
+  },
+  created() {
+    this.getMenuList()
   },
 }
 </script>
@@ -56,5 +98,11 @@ export default {
 }
 .el-main {
   background-color: #eaedf1;
+}
+
+.el-aside {
+  .el-menu {
+    border: 0;
+  }
 }
 </style>

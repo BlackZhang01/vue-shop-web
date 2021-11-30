@@ -8,7 +8,11 @@ import {
     Container,
     Header,
     Aside,
-    Main
+    Main,
+    Menu,
+    MenuItem,
+    MenuItemGroup,
+    Submenu
 } from 'element-ui'
 
 
@@ -22,3 +26,7 @@ Vue.use(Container)
 Vue.use(Header)
 Vue.use(Aside)
 Vue.use(Main)
+Vue.use(Menu)
+Vue.use(MenuItem)
+Vue.use(MenuItemGroup)
+Vue.use(Submenu)
