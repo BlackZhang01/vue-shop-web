@@ -6,6 +6,7 @@
       </div>
       <!-- form表单 -->
       <el-form
+        ref="loginFormRef"
         :rules="loginFormRules"
         :model="loginForm"
         label-width="0px"
@@ -30,7 +31,7 @@
           <!-- 登录按钮 -->
           <el-form-item>
             <el-button type="primary">登录</el-button>
-            <el-button type="info">重置</el-button>
+            <el-button @click="loginFormRef" type="info">重置</el-button>
           </el-form-item>
           <!-- 重置 -->
         </div>
@@ -69,6 +70,11 @@ export default {
         ],
       },
     };
+  },
+  methods: {
+    loginFormRef() {
+      this.$refs.loginFormRef.resetFields();
+    },
   },
 };
 </script>
