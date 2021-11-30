@@ -30,7 +30,7 @@
         <div class="btns">
           <!-- 登录按钮 -->
           <el-form-item>
-            <el-button type="primary">登录</el-button>
+            <el-button @click="login" type="primary">登录</el-button>
             <el-button @click="loginFormRef" type="info">重置</el-button>
           </el-form-item>
           <!-- 重置 -->
@@ -74,6 +74,13 @@ export default {
   methods: {
     loginFormRef() {
       this.$refs.loginFormRef.resetFields();
+    },
+    login() {
+      this.$refs.loginFormRef.validate(async (valid) => {
+        if (!valid) return;
+        const { data: res } = await this.$http.post("login", this.loginForm);
+        console.log(res);
+      });
     },
   },
 };
