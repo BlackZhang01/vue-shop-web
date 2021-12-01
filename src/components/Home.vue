@@ -17,6 +17,7 @@
           background-color="#333744"
           text-color="#fff"
           active-text-color="#ffd04b"
+          unique-opened
         >
           <el-submenu
             :index="item.id + ''"
@@ -24,16 +25,16 @@
             :key="item.id"
           >
             <template slot="title">
-              <i class="el-icon-location"></i>
+              <i :class="iconObject[item.id]"></i>
               <span>{{ item.authName }}</span>
             </template>
             <el-menu-item
-              index="1-4-1"
+              :index="subItem.id + ''"
               v-for="subItem in item.children"
               :key="subItem.id"
             >
               <template slot="title">
-                <i class="el-icon-location"></i>
+                <i class="el-icon-menu"></i>
                 <span>{{ subItem.authName }}</span>
               </template>
             </el-menu-item>
@@ -51,7 +52,14 @@ export default {
   name: 'Home',
   data() {
     return {
-      menuList: {},
+      menuList: [],
+      iconObject: {
+        125: 'el-icon-user-solid',
+        103: 'el-icon-s-check',
+        101: 'el-icon-s-goods',
+        102: 'el-icon-s-order',
+        145: 'el-icon-s-marketing',
+      },
     }
   },
   methods: {
@@ -63,6 +71,7 @@ export default {
       const { data: result } = await this.$http.get('menus')
       if (result.meta.status === 200) {
         this.menuList = result.data
+        console.log(result)
       }
     },
   },
