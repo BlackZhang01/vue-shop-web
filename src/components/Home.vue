@@ -11,13 +11,16 @@
     <!-- 主体区域 -->
     <el-container>
       <!-- 左侧导航栏 -->
-      <el-aside width="200px">
+      <el-aside :width="isCollapse ? '64px' : '200px'">
+        <div class="toggle-button" @click="toggleMenu">|||</div>
         <!-- 导航菜单 -->
         <el-menu
           background-color="#333744"
           text-color="#fff"
           active-text-color="#ffd04b"
           unique-opened
+          :collapse="isCollapse"
+          :collapse-transition="false"
         >
           <el-submenu
             :index="item.id + ''"
@@ -60,6 +63,7 @@ export default {
         102: 'el-icon-s-order',
         145: 'el-icon-s-marketing',
       },
+      isCollapse: false,
     }
   },
   methods: {
@@ -73,6 +77,9 @@ export default {
         this.menuList = result.data
         console.log(result)
       }
+    },
+    toggleMenu() {
+      this.isCollapse = !this.isCollapse
     },
   },
   created() {
@@ -104,14 +111,21 @@ export default {
 }
 .el-aside {
   background-color: #333744;
-}
-.el-main {
-  background-color: #eaedf1;
-}
-
-.el-aside {
+  .toggle-button {
+    height: 24px;
+    line-height: 24px;
+    background-color: #666;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    letter-spacing: 0.2em;
+  }
   .el-menu {
     border: 0;
   }
+}
+.el-main {
+  background-color: #eaedf1;
 }
 </style>
