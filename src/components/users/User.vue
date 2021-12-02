@@ -29,7 +29,11 @@
         <el-table-column prop="role_name" label="角色"></el-table-column>
         <el-table-column label="状态">
           <template v-slot="scope">
-            <el-switch v-model="scope.row.mg_state"> </el-switch>
+            <el-switch
+              v-model="scope.row.mg_state"
+              @change="changeUserState(scope.row)"
+            >
+            </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
@@ -96,6 +100,7 @@ export default {
     this.getUserList()
   },
   methods: {
+    // 获取用户列表
     async getUserList() {
       const { data: result } = await this.$http.get('users', {
         params: this.queryInfo,
@@ -107,15 +112,29 @@ export default {
       this.totalPage = result.data.total
       console.log(result)
     },
+    // 修改每页显示数量
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize
       this.getUserList()
       console.log(newSize)
     },
+    // 切换页码
     handleCurrentChange(newCurrent) {
       this.queryInfo.pagenum = newCurrent
       this.getUserList()
       console.log('current' + newCurrent)
+    },
+    // 修改用户状态
+    async changeUserState(userinfo) {
+      const { data: result } = await this.$http.put(
+        `users/${userinfo.id}/state/${userinfo.mg_state}`
+      )
+      if (result.meta.status !== 200) {
+        userinfo.mg_state = !userinfo.mg_state
+        return this.$message.error('用户状态修改失败!!')
+      }
+      this.$message.success('修改用户状态成功!')
+      console.log(userinfo)
     },
   },
 }
