@@ -21,6 +21,8 @@
           unique-opened
           :collapse="isCollapse"
           :collapse-transition="false"
+          router
+          :default-active="activeIndex"
         >
           <el-submenu
             :index="item.id + ''"
@@ -32,9 +34,10 @@
               <span>{{ item.authName }}</span>
             </template>
             <el-menu-item
-              :index="subItem.id + ''"
+              :index="'/' + subItem.path"
               v-for="subItem in item.children"
               :key="subItem.id"
+              @click="activeItem(`/${subItem.path}`)"
             >
               <template slot="title">
                 <i class="el-icon-menu"></i>
@@ -45,7 +48,9 @@
         </el-menu>
       </el-aside>
       <!-- 右侧主体内容 -->
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -64,6 +69,7 @@ export default {
         145: 'el-icon-s-marketing',
       },
       isCollapse: false,
+      activeIndex: '/users',
     }
   },
   methods: {
@@ -81,9 +87,14 @@ export default {
     toggleMenu() {
       this.isCollapse = !this.isCollapse
     },
+    activeItem(active) {
+      window.sessionStorage.setItem('active', active)
+      this.activeIndex = active
+    },
   },
   created() {
     this.getMenuList()
+    this.activeIndex = window.sessionStorage.getItem('active')
   },
 }
 </script>
