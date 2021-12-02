@@ -11,12 +11,23 @@
       <!-- 用户搜索区域 -->
       <el-row :gutter="20">
         <el-col :span="10">
-          <el-input placeholder="请输入内容" clearable>
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input
+            clearable
+            placeholder="请输入内容"
+            v-model="queryInfo.query"
+            @clear="getUserList"
+          >
+            <el-button
+              @click="getUserList"
+              slot="append"
+              icon="el-icon-search"
+            ></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary">添加用户</el-button>
+          <el-button @click="dialogVisible = true" type="primary"
+            >添加用户</el-button
+          >
         </el-col>
       </el-row>
 
@@ -78,6 +89,17 @@
         :total="totalPage"
       >
       </el-pagination>
+
+      <!-- 添加用户对话框 -->
+      <el-dialog title="添加用户" :visible.sync="dialogVisible" width="50%">
+        <span>这是一段信息</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogVisible = false"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -93,6 +115,7 @@ export default {
       },
       userList: [],
       totalPage: 0,
+      dialogVisible: false,
     }
   },
 
