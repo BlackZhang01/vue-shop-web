@@ -91,7 +91,12 @@
       </el-pagination>
 
       <!-- 添加用户对话框 -->
-      <el-dialog title="添加用户" :visible.sync="dialogVisible" width="50%">
+      <el-dialog
+        title="添加用户"
+        :visible.sync="dialogVisible"
+        width="50%"
+        @close="closeDialog"
+      >
         <el-form
           :model="addFromUser"
           :rules="fromRule"
@@ -124,7 +129,7 @@
 <script>
 export default {
   data() {
-    var checkEmail = (rule, value, cb) => {
+    let checkEmail = (rule, value, cb) => {
       let rul = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
       if (rul.test(value)) {
         return cb()
@@ -227,10 +232,26 @@ export default {
       this.$message.success('修改用户状态成功!')
       console.log(userinfo)
     },
+    // 点击确定按钮,添加用户
     addUser() {
-      this.$refs.ruleForm.validate((valid) => {
+      this.$refs.ruleForm.validate(async (valid) => {
         if (!valid) return
+        const { data: result } = await this.$http.post(
+          'users',
+          this.addFromUser
+        )
+        if (result.meta.status === 201) {
+          this.$message.success('添加用户成功')
+          this.dialogVisible = false
+          this.getUserList()
+        } else {
+          this.$message.error('添加用户失败!!')
+        }
       })
+    },
+    // 关闭对话框时重置添加用户表单
+    closeDialog() {
+      this.$refs.ruleForm.resetFields()
     },
   },
 }
