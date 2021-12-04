@@ -48,18 +48,20 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
-          <template>
+          <template v-slot="scope">
             <!-- 编辑按钮 -->
             <el-button
               size="mini"
               type="primary"
               icon="el-icon-edit"
+              @click="updateDialogVisible = true"
             ></el-button>
             <!-- 删除按钮 -->
             <el-button
               type="danger"
               size="mini"
               icon="el-icon-delete"
+              @click="deleteUser(scope.row.id)"
             ></el-button>
             <!-- 分配角色按钮 -->
             <el-tooltip
@@ -117,8 +119,35 @@
           </el-form-item>
         </el-form>
         <!-- 添加用户底部 -->
-        <span slot="footer" class="dialog-footer">
+        <span slot="footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addUser">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 修改用户信息 -->
+      <el-dialog
+        title="添加用户"
+        :visible.sync="updateDialogVisible"
+        width="50%"
+        @close="closeDialog"
+      >
+        <el-form
+          :model="updateUser"
+          :rules="fromRule"
+          ref="ruleForm"
+          label-width="70px"
+        >
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="updateUser.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机" prop="mobile">
+            <el-input v-model="addFromUser.mobile"></el-input>
+          </el-form-item>
+        </el-form>
+        <!-- 底部 -->
+        <span slot="footer">
+          <el-button @click="updateDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="addUser">确 定</el-button>
         </span>
       </el-dialog>
@@ -155,11 +184,17 @@ export default {
       userList: [],
       totalPage: 0,
       dialogVisible: false,
+      updateDialogVisible: false,
       addFromUser: {
         username: '',
         password: '',
         email: '',
         mobile: '',
+      },
+      updateUser: {
+        email: '',
+        mobile: '',
+        id: '',
       },
       fromRule: {
         username: [
@@ -252,6 +287,13 @@ export default {
     // 关闭对话框时重置添加用户表单
     closeDialog() {
       this.$refs.ruleForm.resetFields()
+    },
+    // 根据用户 id 删除单个用户
+    async deleteUser(id) {
+      const { data: result } = await this.$http.delete(`users/${id}`)
+      if (result.meta.status !== 200) return this.$message.error('删除失败')
+      this.$message.success('删除成功!')
+      this.getUserList()
     },
   },
 }
