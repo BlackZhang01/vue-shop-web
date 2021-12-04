@@ -92,12 +92,29 @@
 
       <!-- 添加用户对话框 -->
       <el-dialog title="添加用户" :visible.sync="dialogVisible" width="50%">
-        <span>这是一段信息</span>
+        <el-form
+          :model="addFromUser"
+          :rules="fromRule"
+          ref="ruleForm"
+          label-width="70px"
+        >
+          <el-form-item label="账号" prop="username">
+            <el-input v-model="addFromUser.username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="addFromUser.password"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="addFromUser.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机" prop="mobile">
+            <el-input v-model="addFromUser.mobile"></el-input>
+          </el-form-item>
+        </el-form>
+        <!-- 添加用户底部 -->
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogVisible = false"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="addUser">确 定</el-button>
         </span>
       </el-dialog>
     </el-card>
@@ -107,6 +124,23 @@
 <script>
 export default {
   data() {
+    var checkEmail = (rule, value, cb) => {
+      let rul = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+      if (rul.test(value)) {
+        return cb()
+      } else {
+        return cb(new Error('请输入正确的邮箱!!'))
+      }
+    }
+
+    let checkMobile = (rule, value, cb) => {
+      let rul = /^1[3456789]\d{9}$/
+      if (rul.test(value)) {
+        return cb()
+      } else {
+        return cb(new Error('请输入正确的手机号'))
+      }
+    }
     return {
       queryInfo: {
         query: '',
@@ -116,6 +150,40 @@ export default {
       userList: [],
       totalPage: 0,
       dialogVisible: false,
+      addFromUser: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: '',
+      },
+      fromRule: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          {
+            min: 3,
+            max: 10,
+            message: '长度在 3 到 10 个字符',
+            trigger: 'blur',
+          },
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {
+            min: 6,
+            max: 15,
+            message: '长度在 6 到 15 个字符',
+            trigger: 'blur',
+          },
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' },
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' },
+        ],
+      },
     }
   },
 
@@ -158,6 +226,11 @@ export default {
       }
       this.$message.success('修改用户状态成功!')
       console.log(userinfo)
+    },
+    addUser() {
+      this.$refs.ruleForm.validate((valid) => {
+        if (!valid) return
+      })
     },
   },
 }
