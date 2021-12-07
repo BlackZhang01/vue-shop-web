@@ -17,7 +17,11 @@
             @click="editRoleInfoData(scope.row)"
             >编辑</el-button
           >
-          <el-button icon="el-icon-delete" size="mini" type="danger"
+          <el-button
+            icon="el-icon-delete"
+            size="mini"
+            type="danger"
+            @click="removeRole(scope.row.id)"
             >删除</el-button
           >
           <el-button icon="el-icon-setting" size="mini" type="warning"
@@ -167,6 +171,27 @@ export default {
     editRoleInfoData(roleInfo) {
       this.editRoleInfo = roleInfo
       this.editRoleDialogVisible = true
+    },
+    // 根据 ID 删除角色
+    async removeRole(id) {
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该角色, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).catch((err) => err)
+      if (confirmResult === 'cancel') {
+        return this.$message('您已取消了删除操作')
+      }
+      const { data: result } = await this.$http.delete(`/roles/${id}`)
+      if (result.meta.status !== 200) {
+        return this.$message.error('删除失败!!')
+      }
+      this.$message.success('删除角色成功.')
+      this.getRoleList()
     },
   },
 }
