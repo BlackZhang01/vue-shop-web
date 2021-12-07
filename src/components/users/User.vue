@@ -54,7 +54,7 @@
               size="mini"
               type="primary"
               icon="el-icon-edit"
-              @click="updateDialogVisible = true"
+              @click="updateUserInfo(scope.row)"
             ></el-button>
             <!-- 删除按钮 -->
             <el-button
@@ -97,7 +97,7 @@
         title="添加用户"
         :visible.sync="dialogVisible"
         width="50%"
-        @close="closeDialog"
+        @close="addDialogClosed"
       >
         <el-form
           :model="addFromUser"
@@ -130,25 +130,28 @@
         title="添加用户"
         :visible.sync="updateDialogVisible"
         width="50%"
-        @close="closeDialog"
+        @close="updateDialogClosed"
       >
         <el-form
-          :model="updateUser"
+          :model="updateFormUser"
           :rules="fromRule"
-          ref="ruleForm"
+          ref="updateUserForm"
           label-width="70px"
         >
+          <el-form-item label="用户名">
+            <el-input v-model="updateFormUser.username" disabled></el-input>
+          </el-form-item>
           <el-form-item label="邮箱" prop="email">
-            <el-input v-model="updateUser.email"></el-input>
+            <el-input v-model="updateFormUser.email"></el-input>
           </el-form-item>
           <el-form-item label="手机" prop="mobile">
-            <el-input v-model="addFromUser.mobile"></el-input>
+            <el-input v-model="updateFormUser.mobile"></el-input>
           </el-form-item>
         </el-form>
         <!-- 底部 -->
         <span slot="footer">
           <el-button @click="updateDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addUser">确 定</el-button>
+          <el-button type="primary" @click="updateUser">确 定</el-button>
         </span>
       </el-dialog>
     </el-card>
@@ -183,6 +186,7 @@ export default {
       },
       userList: [],
       totalPage: 0,
+
       dialogVisible: false,
       updateDialogVisible: false,
       addFromUser: {
@@ -191,11 +195,7 @@ export default {
         email: '',
         mobile: '',
       },
-      updateUser: {
-        email: '',
-        mobile: '',
-        id: '',
-      },
+      updateFormUser: {},
       fromRule: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -285,8 +285,12 @@ export default {
       })
     },
     // 关闭对话框时重置添加用户表单
-    closeDialog() {
+    addDialogClosed() {
       this.$refs.ruleForm.resetFields()
+    },
+    // 监听更新用户信息关闭closed事件
+    updateDialogClosed() {
+      this.$refs.updateUserForm.resetFields()
     },
     // 根据用户 id 删除单个用户
     async deleteUser(id) {
@@ -294,6 +298,30 @@ export default {
       if (result.meta.status !== 200) return this.$message.error('删除失败')
       this.$message.success('删除成功!')
       this.getUserList()
+    },
+    // 获取修改用户的 id
+    updateUserInfo(userInfo) {
+      this.updateFormUser = userInfo
+      this.updateDialogVisible = true
+    },
+    // 更新用户信息
+    updateUser() {
+      this.$refs.updateUserForm.validate(async (valid) => {
+        if (!valid) return
+        const { data: result } = await this.$http.put(
+          `users/${this.updateFormUser.id}`,
+          {
+            email: this.updateFormUser.email,
+            mobile: this.updateFormUser.mobile,
+          }
+        )
+        if (result.meta.status !== 200) {
+          return this.$message.error('更新用户信息失败!')
+        }
+        this.$message.success('更新用户信息成功.')
+        this.updateDialogVisible = false
+        this.getUserList()
+      })
     },
   },
 }

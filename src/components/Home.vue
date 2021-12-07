@@ -73,10 +73,12 @@ export default {
     }
   },
   methods: {
+    // 退出登录
     logout() {
       window.sessionStorage.clear('token')
       this.$router.push('/login')
     },
+    // 获取菜单列表
     async getMenuList() {
       const { data: result } = await this.$http.get('menus')
       if (result.meta.status === 200) {
@@ -84,6 +86,7 @@ export default {
         console.log(result)
       }
     },
+    // 缩放菜单
     toggleMenu() {
       this.isCollapse = !this.isCollapse
     },

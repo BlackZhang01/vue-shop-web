@@ -24,6 +24,7 @@ import {
     Pagination,
     Tooltip,
     Dialog,
+    Tag,
 } from 'element-ui'
 
 
@@ -52,3 +53,4 @@ Vue.use(Switch)
 Vue.use(Pagination)
 Vue.use(Tooltip)
 Vue.use(Dialog)
+Vue.use(Tag)
