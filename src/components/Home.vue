@@ -83,7 +83,7 @@ export default {
       const { data: result } = await this.$http.get('menus')
       if (result.meta.status === 200) {
         this.menuList = result.data
-        console.log(result)
+        // console.log(result)
       }
     },
     // 缩放菜单
