@@ -25,7 +25,8 @@ import {
     Tooltip,
     Dialog,
     Tag,
-    MessageBox
+    MessageBox,
+    Tree
 } from 'element-ui'
 
 
@@ -56,3 +57,4 @@ Vue.use(Pagination)
 Vue.use(Tooltip)
 Vue.use(Dialog)
 Vue.use(Tag)
+Vue.use(Tree)
