@@ -78,7 +78,11 @@
               @click="removeRole(scope.row.id)"
               >删除</el-button
             >
-            <el-button icon="el-icon-setting" size="mini" type="warning"
+            <el-button
+              icon="el-icon-setting"
+              size="mini"
+              @click="getAllRights(scope.row)"
+              type="warning"
               >分配权限</el-button
             >
           </template>
@@ -137,6 +141,31 @@
           <el-button type="primary" @click="editRole">确 定</el-button>
         </span>
       </el-dialog>
+
+      <!-- 分配权限对话框 -->
+      <el-dialog
+        title="分配权限"
+        :visible.sync="assignRightsDialogVisible"
+        width="50%"
+        @closed="refArray = []"
+      >
+        <el-tree
+          :data="allRightsList"
+          node-key="id"
+          :props="defaultProps"
+          default-expand-all
+          :default-checked-keys="refArray"
+          show-checkbox
+          ref="checkedRef"
+        ></el-tree>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="assignRightsDialogVisible = false"
+            >取 消</el-button
+          >
+          <el-button type="primary" @click="roleRights">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -175,9 +204,19 @@ export default {
       editRoleDialogVisible: false,
       //   待修改的角色信息
       editRoleInfo: {},
+      //   分配权限对话框
+      assignRightsDialogVisible: false,
+      allRightsList: [],
+      defaultProps: {
+        children: 'children',
+        label: 'authName',
+      },
+      //   默认选中的数组
+      refArray: [],
+      roleRightsId: '',
     }
   },
-  mounted() {
+  created() {
     this.getRoleList()
   },
   methods: {
@@ -248,6 +287,8 @@ export default {
       this.$message.success('删除角色成功.')
       this.getRoleList()
     },
+
+    // 删除权限
     async deleteRights(role, rightId) {
       const { data: result } = await this.$http.delete(
         `/roles/${role.id}/rights/${rightId}`
@@ -257,6 +298,47 @@ export default {
       }
       this.$message.success('删除权限成功.')
       role.children = result.data
+    },
+
+    //获取所有权限
+    async getAllRights(role) {
+      console.log(role)
+      const { data: result } = await this.$http.get('/rights/tree')
+      if (result.meta.status !== 200) {
+        return this.$message.error('get rights is failing !!!')
+      }
+      this.roleRightsId = role.id
+      //   console.log(role.id, '@', this.roleRightsId)
+      role.children.forEach((item1) => {
+        item1.children.forEach((item2) => {
+          item2.children.forEach((item3) => {
+            this.refArray.push(item3.id)
+          })
+        })
+      })
+      //   console.log(this.refArray)
+      this.allRightsList = result.data
+      this.assignRightsDialogVisible = true
+    },
+    async roleRights() {
+      const tempList = [
+        ...this.$refs.checkedRef.getHalfCheckedNodes(),
+        ...this.$refs.checkedRef.getCheckedKeys(),
+      ]
+      let rids = tempList.join(',')
+      console.log(rids)
+      //   console.log(this.refArray)
+      const { data: result } = await this.$http.post(
+        `roles/${this.roleRightsId}/rights`,
+        { rids }
+      )
+      console.log(result)
+      if (result.meta.status !== 200) {
+        return this.$message.error('权限更新失败!!!')
+      }
+      this.$message.success('权限更新成功.')
+      this.assignRightsDialogVisible = false
+      this.getRoleList()
     },
   },
 }

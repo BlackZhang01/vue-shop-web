@@ -241,7 +241,6 @@ export default {
       }
       this.userList = result.data.users
       this.totalPage = result.data.total
-      console.log(result)
     },
     // 修改每页显示数量
     handleSizeChange(newSize) {
