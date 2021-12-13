@@ -74,6 +74,7 @@
                 type="warning"
                 size="mini"
                 icon="el-icon-setting"
+                @click="assignDialogVisible = true"
               ></el-button>
             </el-tooltip>
           </template>
@@ -154,6 +155,31 @@
           <el-button type="primary" @click="updateUser">确 定</el-button>
         </span>
       </el-dialog>
+
+      <!-- 分配角色 -->
+      <el-dialog
+        title="分配角色"
+        :visible.sync="assignDialogVisible"
+        width="40%"
+      >
+        <p>当前用户名:{{}}</p>
+        <p>当前角色名:{{}}</p>
+        <el-select v-model="value" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="assignDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="assignDialogVisible = false"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -224,6 +250,8 @@ export default {
           { validator: checkMobile, trigger: 'blur' },
         ],
       },
+      // 控制分配角色对话框
+      assignDialogVisible: false,
     }
   },
 
